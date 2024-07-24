@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ES2022",
+    "moduleResolution":"node",
+    "strict": true,
+    "sourceMap": true,
+    "sourceRoot": "https://github.com/rdf-link/server/tree/main/src/",
+    "declaration": true
+  },
+  "include": ["src/server.ts"]
+}
