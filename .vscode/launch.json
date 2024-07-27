@@ -4,9 +4,10 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Run Node.js Server",
+            "runtimeArgs": [ "--watch" ],
             "program": "${workspaceFolder}/dist/server.js",
-            "args": [ "--watch" ]
+            "preLaunchTask": "npm: build",
         }
     ]
 }
