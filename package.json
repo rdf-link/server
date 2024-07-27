@@ -1,36 +1,36 @@
 {
-  "name": "@rdf-link/server",
-  "version": "0.0.1",
-  "description": "",
-  "type": "module",
-  "main": "./dist/server.js",
-  "types": "./dist/server.d.ts",
-  "exports": {
-    ".": "./dist/server.js"
-  },
-  "files": [
-    "dist"
-  ],
-  "license": "ISC",
-  "author": "",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rdf-link/server.git"
-  },
-  "bugs": {
-    "url": "https://github.com/rdf-link/server/issues"
-  },
-  "scripts": {
-    "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "devDependencies": {
-    "@rdfjs/types": "^1.1.0",
-    "@types/n3": "^1.16.4",
-    "@types/node": "^20.14.12",
-    "typescript": "^5.5.4"
-  },
-  "dependencies": {
-    "n3": "^1.17.4"
-  }
+    "name": "@rdf-link/server",
+    "version": "0.0.1",
+    "description": "",
+    "type": "module",
+    "main": "./dist/server.js",
+    "types": "./dist/server.d.ts",
+    "exports": {
+        ".": "./dist/server.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "license": "ISC",
+    "author": "",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/rdf-link/server.git"
+    },
+    "bugs": {
+        "url": "https://github.com/rdf-link/server/issues"
+    },
+    "scripts": {
+        "build": "tsc",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "devDependencies": {
+        "@rdfjs/types": "^1.1.0",
+        "@types/n3": "^1.16.4",
+        "@types/node": "^20.14.12",
+        "typescript": "^5.5.4"
+    },
+    "dependencies": {
+        "n3": "^1.17.4"
+    }
 }
