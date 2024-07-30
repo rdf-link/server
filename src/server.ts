@@ -12,7 +12,7 @@ const server = createServer((req, res) => {
 
     // Create a stream writer that writes Turtle
     const writer = new StreamWriter({
-        format: 'N3',
+        format: 'TURTLE',
         prefixes: {
             ex: 'http://example.org/'
         }
