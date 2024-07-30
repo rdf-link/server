@@ -1,16 +1,14 @@
 import { createServer } from 'node:http';
-import { Readable } from 'node:stream'
-import { StreamParser, StreamWriter } from 'n3';
-import { x } from './data/x.js';
+import { StreamWriter } from 'n3';
+import { data } from './data.js';
 
 const port = 3000;
 
-const server = createServer((req, res) => {
-    // Create a readable stream from the turtle string
-    const readableStream = Readable.from(x);
-    const parser = new StreamParser();
+const server = createServer((request, response) => {
+    const url = new URL(`http://${process.env.HOST ?? 'localhost'}${request.url}`); 
 
     // Create a stream writer that writes Turtle
+    // TODO create stream writer depending on accept header
     const writer = new StreamWriter({
         format: 'TURTLE',
         prefixes: {
@@ -19,16 +17,15 @@ const server = createServer((req, res) => {
     });
 
     // Set the response header
-    res.writeHead(200, { 'Content-Type': 'text/turtle' });
+    response.writeHead(200, { 'Content-Type': 'text/turtle' });
 
-    readableStream
-        .pipe(parser)
+    data(url)
         .pipe(writer)
-        .pipe(res)
+        .pipe(response)
         .on('error', (error) => {
             console.error('Error processing data:', error);
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('Internal Server Error');
+            response.writeHead(500, { 'Content-Type': 'text/plain' });
+            response.end('Internal Server Error');
         });
 });
 
