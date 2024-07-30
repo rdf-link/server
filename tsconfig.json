@@ -7,7 +7,6 @@
     "moduleResolution":"node",
     "strict": true,
     "sourceMap": true,
-    "sourceRoot": "https://github.com/rdf-link/server/tree/main/src/",
     "declaration": true
   },
   "include": ["src/server.ts"]
