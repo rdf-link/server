@@ -1,27 +1,33 @@
 import { createServer } from 'node:http';
-import { StreamWriter } from 'n3';
-import { data } from './data.js';
+import { Readable } from 'node:stream';
 
-const port = 3000;
+import { quads } from './quads.js';
+import { describe } from './describe.js';
+
+import { DOMAIN, PORT } from './config.js';
+
+import { DataFactory, StreamWriter } from 'n3';
 
 const server = createServer(async (request, response) => {
-    const url = new URL(`http://${process.env.HOST ?? 'localhost'}${request.url}`); 
+    const term = DataFactory.namedNode(new URL(`${request.url}`, DOMAIN).href);
 
     // Create a stream writer that writes Turtle
-    // TODO create stream writer depending on accept header
+    // TODO the stream writer is retrieved depending on the content type requested (accept header)
+    // First accept text/turtle and text/html
     const writer = new StreamWriter({
         format: 'TURTLE',
-        prefixes: {
-            ex: 'http://example.org/'
-        }
+        prefixes: { '': DOMAIN }
     });
 
     // Set the response header
     response.writeHead(200, { 'Content-Type': 'text/turtle' });
 
-    const readStream = await data(url);
+    //const readStream = await data(url);
 
-    readStream
+
+    // Create a readable stream from quad iterable
+    Readable
+        .from(describe(quads(), term))
         .pipe(writer)
         .pipe(response)
         .on('error', (error) => {
@@ -31,6 +37,6 @@ const server = createServer(async (request, response) => {
         });
 });
 
-server.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}/`);
+server.listen(PORT, () => {
+    console.log(`Server running at http://${process.env.HOST}:${PORT}/`);
 });
