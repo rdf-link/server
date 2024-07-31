@@ -4,7 +4,7 @@ import { data } from './data.js';
 
 const port = 3000;
 
-const server = createServer((request, response) => {
+const server = createServer(async (request, response) => {
     const url = new URL(`http://${process.env.HOST ?? 'localhost'}${request.url}`); 
 
     // Create a stream writer that writes Turtle
@@ -19,7 +19,9 @@ const server = createServer((request, response) => {
     // Set the response header
     response.writeHead(200, { 'Content-Type': 'text/turtle' });
 
-    data(url)
+    const readStream = await data(url);
+
+    readStream
         .pipe(writer)
         .pipe(response)
         .on('error', (error) => {

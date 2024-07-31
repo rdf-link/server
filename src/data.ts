@@ -13,10 +13,19 @@ import { DataFactory, Parser, Store } from 'n3';
 
 const x = `
 <x> <y> 'z' .
+<x1> 
+    <y1> 'z1', 'z2' ;
+    <y2> <z1>, <z2> .
 <a> <b> <c>, <d> .
 `;
 
-export function data(url: URL): Readable {
+async function* concatStreams(readables: Readable[]) {
+    for (const readable of readables) {
+        for await (const chunk of readable) { yield chunk }
+    }
+}
+
+export async function data(url: URL): Promise<Readable> {
     const parser = new Parser({ baseIRI: 'http://example.org/', format: 'Turtle' });
     const store = new Store(parser.parse((x)));
 
@@ -24,6 +33,11 @@ export function data(url: URL): Readable {
         throw new Error("TEST")
     }
 
+    const iterable = await concatStreams([
+        store.match(DataFactory.namedNode('http://example.org/x')),
+        store.match(DataFactory.namedNode('http://example.org/x1'))
+    ].map(x => Readable.from(x)))
+
     // Create a readable stream from the turtle string
-    return Readable.from(store.match(DataFactory.namedNode('http://example.org/')));
+    return Readable.from(iterable);
 }
