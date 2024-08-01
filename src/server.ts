@@ -1,12 +1,11 @@
 import { createServer } from 'node:http';
-import { Readable } from 'node:stream';
 
-import { quads } from './quads.js';
-import { describe } from './describe.js';
+import { data } from './data.js';
+import { streamDescribe } from './describe.js';
 
 import { DOMAIN, PORT } from './config.js';
 
-import { DataFactory, StreamWriter } from 'n3';
+import { DataFactory, StreamParser, StreamWriter } from 'n3';
 
 const server = createServer(async (request, response) => {
     const term = DataFactory.namedNode(new URL(`${request.url}`, DOMAIN).href);
@@ -19,15 +18,14 @@ const server = createServer(async (request, response) => {
         prefixes: { '': DOMAIN }
     });
 
+
+
     // Set the response header
     response.writeHead(200, { 'Content-Type': 'text/turtle' });
 
-    //const readStream = await data(url);
-
-
-    // Create a readable stream from quad iterable
-    Readable
-        .from(describe(quads(), term))
+    // Create a readable stream of quads
+    data()
+        .pipe(streamDescribe(term))
         .pipe(writer)
         .pipe(response)
         .on('error', (error) => {
