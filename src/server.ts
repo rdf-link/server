@@ -1,32 +1,28 @@
 import { createServer } from 'node:http';
 
 import { data } from './data.js';
-import { streamDescribe } from './describe.js';
+import { parse } from './parse.js';
+import { describe } from './query.js';
+import { writer } from './writer.js';
+
 
 import { DOMAIN, PORT } from './config.js';
 
-import { DataFactory, StreamParser, StreamWriter } from 'n3';
+import { DataFactory } from 'n3';
 
 const server = createServer(async (request, response) => {
     const term = DataFactory.namedNode(new URL(`${request.url}`, DOMAIN).href);
 
-    // Create a stream writer that writes Turtle
-    // TODO the stream writer is retrieved depending on the content type requested (accept header)
-    // First accept text/turtle and text/html
-    const writer = new StreamWriter({
-        format: 'TURTLE',
-        prefixes: { '': DOMAIN }
-    });
-
-
-
     // Set the response header
     response.writeHead(200, { 'Content-Type': 'text/turtle' });
 
-    // Create a readable stream of quads
+    // TODO consider parse, describe and writer under data
+    // TODO make it so that the query is configurable
+    // Readable RDF turtle stream -> parse as quads -> filter quads -> write response 
     data()
-        .pipe(streamDescribe(term))
-        .pipe(writer)
+        .pipe(parse())
+        .pipe(describe(term))
+        .pipe(writer())
         .pipe(response)
         .on('error', (error) => {
             console.error('Error processing data:', error);

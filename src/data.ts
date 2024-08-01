@@ -1,9 +1,4 @@
-import { StreamParser } from "n3";
-import { Readable, Stream, EventEmitter } from "node:stream";
-import { DOMAIN } from "./config.js";
-
-// TODO fix up the type import should be rdfjs/types but here n3 Quads have toJson
-import type { Quad } from "n3";
+import { Readable } from "node:stream";
 
 const x = `
 <> <bla> 'bla' .
@@ -15,10 +10,7 @@ const x = `
 <a> <b> <c>, <d>, <x> .
 `;
 
-
-
-export function data(): StreamParser<Quad> {
-    const parser = new StreamParser({ baseIRI: DOMAIN, format: 'Turtle' });
-    const y = Readable.from(x);
-    return y.pipe(parser);
+// TODO Make data source configurable
+export function data(): Readable {
+    return Readable.from(x);
 }
