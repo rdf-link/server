@@ -5,15 +5,10 @@ import { parse } from './parse.js';
 import { describe } from './query.js';
 import { writer } from './writer.js';
 
-
-import { DOMAIN, PORT } from './config.js';
-
-import { DataFactory } from 'n3';
+import { PORT } from './config.js';
 
 const server = createServer(async (request, response) => {
-    const term = DataFactory.namedNode(new URL(`${request.url}`, DOMAIN).href);
-
-    // Set the response header
+    // TODO make it content negotiable
     response.writeHead(200, { 'Content-Type': 'text/turtle' });
 
     // TODO consider parse, describe and writer under data
@@ -21,7 +16,7 @@ const server = createServer(async (request, response) => {
     // Readable RDF turtle stream -> parse as quads -> filter quads -> write response 
     data()
         .pipe(parse())
-        .pipe(describe(term))
+        .pipe(describe(request))
         .pipe(writer())
         .pipe(response)
         .on('error', (error) => {
@@ -32,5 +27,5 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Server running at http://${process.env.HOST}:${PORT}/`);
+    console.log(`Server running at http://${process.env.HOST ?? 'localhost'}:${PORT}/`);
 });

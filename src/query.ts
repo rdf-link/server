@@ -1,5 +1,7 @@
-import type { Term } from "@rdfjs/types";
+import { IncomingMessage } from "http";
+import { DataFactory } from "n3";
 import { Transform } from "node:stream";
+import { DOMAIN } from "./config.js";
 
 // export async function* describe(store: Promise<Iterable<Quad>>, term: Term) {
 //     const blanks = [];
@@ -15,7 +17,9 @@ import { Transform } from "node:stream";
 //     }
 // }
 
-export function describe(term: Term) {
+export function describe(request: IncomingMessage) {
+    const term = DataFactory.namedNode(new URL(`${request.url}`, DOMAIN).href);
+
     return new Transform({
         // Make sure chunks are considered as object instead of buffers
         objectMode: true,
