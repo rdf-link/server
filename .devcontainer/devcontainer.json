@@ -16,6 +16,5 @@
 			"label": "Node Server",
 			"onAutoForward": "notify"
 		}
-	},
-	"postCreateCommand": "npm ci"
+	}
 }
