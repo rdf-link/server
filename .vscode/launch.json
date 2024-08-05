@@ -2,12 +2,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug Node.js Application",
             "type": "node",
             "request": "launch",
-            "name": "Run Node.js Server",
-            "runtimeArgs": [ "--watch" ],
-            "program": "${workspaceFolder}/dist/server.js",
-            "preLaunchTask": "npm: build",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "debug"
+            ],
+            "preLaunchTask": "npm: build"
         }
     ]
 }

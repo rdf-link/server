@@ -22,6 +22,7 @@
     },
     "scripts": {
         "build": "tsc",
+        "debug": "node --watch ./dist/server.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "devDependencies": {
