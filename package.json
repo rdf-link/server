@@ -23,7 +23,9 @@
     "scripts": {
         "build": "tsc",
         "debug": "node --watch ./dist/server.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "node ./dist/server.js",
+        "test": "curl -X GET 'http://localhost:3000/'",
+        "bench": "ab -k -c 25 -n 1000 'http://127.0.0.1:3000/'"
     },
     "devDependencies": {
         "@rdfjs/types": "^1.1.0",
