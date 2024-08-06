@@ -2,11 +2,13 @@ import { createServer } from 'node:http';
 
 import { DataSource } from './data/datasource.js'
 
-import { PORT } from './config.js';
+const DOMAIN = `${process.env.HOST ?? 'localhost'}`;
+const PORT = process.env.PORT ?? 3000;
 
 const server = createServer(async (request, response) => {
     // TODO make it content negotiable
-    response.writeHead(200, { 'Content-Type': 'text/turtle' });
+    response.statusCode = 200;
+    response.setHeader('Content-Type', 'text/turtle');
 
     // TODO add a request parser
     // Check for accept header
@@ -25,5 +27,6 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Server running at http://${process.env.HOST ?? 'localhost'}:${PORT}/`);
+    console.log(`Node environment: ${process.env.NODE_ENV}`);
+    console.log(`Server running: http://${DOMAIN}:${PORT}/`);
 });

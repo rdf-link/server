@@ -8,6 +8,7 @@ export class DataSource {
     static #format = 'Turtle';
 
     static async #data(): Promise<Readable> {
+        console.log("read data source")
         return Readable.from(`
 <> <bla> 'bla' .
 <x> <y> 'z' .
