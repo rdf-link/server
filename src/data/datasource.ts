@@ -4,24 +4,17 @@ import { Readable, Transform, Writable } from "node:stream";
 import { DataFactory, StreamParser, StreamWriter } from "n3";
 
 export class DataSource {
-    static #domain = `http://${process.env.HOST ?? 'localhost'}/`;
+    #data;
+    #domain;
     static #format = 'Turtle';
 
-    static async #data(): Promise<Readable> {
-        console.log("read data source")
-        return Readable.from(`
-<> <bla> 'bla' .
-<x> <y> 'z' .
-<x/d> <bla> 'bla' .
-<x1> 
-    <y1> 'z1', 'z2' ;
-    <y2> <z1>, <z2> .
-<a> <b> <c>, <d>, <x> .
-`);
+    constructor(data: Readable, domain: URL) {
+        this.#data = data;
+        this.#domain = domain
     }
 
-    static #describe(request: IncomingMessage): Transform {
-        const term = DataFactory.namedNode(new URL(`${request.url}`, DataSource.#domain).href);
+    #describe(request: IncomingMessage): Transform {
+        const term = DataFactory.namedNode(new URL(`${request.url}`, this.#domain).href);
     
         return new Transform({
             // Make sure chunks are considered as object instead of buffers
@@ -41,20 +34,20 @@ export class DataSource {
         });
     }
 
-    static #parse(): Transform {
-        return new StreamParser({ baseIRI: DataSource.#domain, format: DataSource.#format });
+    #parse(): Transform {
+        return new StreamParser({ baseIRI: this.#domain.href, format: DataSource.#format });
     }
 
-    static #write(): Transform {
-        return new StreamWriter({format: DataSource.#format, prefixes: { '': DataSource.#domain }});
+    #write(): Transform {
+        return new StreamWriter({format: DataSource.#format, prefixes: { '': this.#domain.href }});
     }
 
     async query(request: IncomingMessage): Promise<Writable> {
         // TODO make it so that the query is configurable
         // Readable RDF turtle stream -> parse as quads -> filter quads -> write response 
-        return (await DataSource.#data())
-            .pipe(DataSource.#parse())
-            .pipe(DataSource.#describe(request))
-            .pipe(DataSource.#write());
+        return (await this.#data)
+            .pipe(this.#parse())
+            .pipe(this.#describe(request))
+            .pipe(this.#write());
     }
 }

@@ -1,11 +1,12 @@
 import { createServer } from 'node:http';
 
 import { DataSource } from './data/datasource.js'
+import { Readable } from 'node:stream';
 
-const DOMAIN = `${process.env.HOST ?? 'localhost'}`;
 const PORT = process.env.PORT ?? 3000;
 
 const server = createServer(async (request, response) => {
+    // TODO error handling
     // TODO make it content negotiable
     response.statusCode = 200;
     response.setHeader('Content-Type', 'text/turtle');
@@ -14,7 +15,7 @@ const server = createServer(async (request, response) => {
     // Check for accept header
     // Check for query parameters
     // Check for url
-    const datasource = new DataSource();
+    const datasource = new DataSource(Readable.from(process.env.DATA ?? ''), new URL(process.env.DOMAIN ?? ''));
 
     // Query datasource and pipe to response
     (await datasource.query(request))
@@ -28,5 +29,5 @@ const server = createServer(async (request, response) => {
 
 server.listen(PORT, () => {
     console.log(`Node environment: ${process.env.NODE_ENV}`);
-    console.log(`Server running: http://${DOMAIN}:${PORT}/`);
+    console.log(`Server running: http://${process.env.HOST ?? 'localhost'}:${PORT}/`);
 });
