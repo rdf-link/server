@@ -6,7 +6,6 @@ import { DataFactory, StreamParser, StreamWriter } from "n3";
 export class DataSource {
     #data;
     #domain;
-    static #format = 'Turtle';
 
     constructor(data: Readable, domain: URL) {
         this.#data = data;
@@ -14,7 +13,7 @@ export class DataSource {
     }
 
     #describe(request: IncomingMessage): Transform {
-        const term = DataFactory.namedNode(new URL(`${request.url}`, this.#domain).href);
+        const term = DataFactory.namedNode(new URL(`${request.url}`, this.#domain.href).href);
     
         return new Transform({
             // Make sure chunks are considered as object instead of buffers
@@ -35,19 +34,21 @@ export class DataSource {
     }
 
     #parse(): Transform {
-        return new StreamParser({ baseIRI: this.#domain.href, format: DataSource.#format });
+        return new StreamParser({ format: 'TURTLE' });
     }
 
-    #write(): Transform {
-        return new StreamWriter({format: DataSource.#format, prefixes: { '': this.#domain.href }});
+    #write(format: string): Transform {
+        return new StreamWriter({format, prefixes: { '': this.#domain.href }});
     }
 
     async query(request: IncomingMessage): Promise<Writable> {
         // TODO make it so that the query is configurable
         // Readable RDF turtle stream -> parse as quads -> filter quads -> write response 
+        // parse request to see acceptable representation default to turtle
+        const accept = 'TURTLE'
         return (await this.#data)
             .pipe(this.#parse())
             .pipe(this.#describe(request))
-            .pipe(this.#write());
+            .pipe(this.#write(accept));
     }
 }
