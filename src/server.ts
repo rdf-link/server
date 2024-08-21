@@ -1,10 +1,20 @@
 import { createServer } from 'node:http';
 
-import { config } from './config.js'
-import { DataSource } from './data/datasource.js'
+import { config } from './config.js';
+import { HTTP } from './constants.js';
+import { DataSource } from './data/datasource.js';
 import { Readable } from 'node:stream';
 
+
 const server = createServer(async (request, response) => {
+    // Handle allowed HTTP methods
+    const ALLOW = [ HTTP.REQUEST_METHOD.GET, HTTP.REQUEST_METHOD.HEAD, HTTP.REQUEST_METHOD.OPTIONS];
+    response.setHeader('Allow', ALLOW.join(', '));
+    if (!ALLOW.includes(request.method || "")) {
+        response.writeHead(HTTP.STATUS.CLIENT_ERROR.METHOD_NOT_ALLOWED);
+        return response.end();
+    }
+
     // TODO error handling
     // TODO make it content negotiable
     response.statusCode = 200;
