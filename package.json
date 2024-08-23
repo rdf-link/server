@@ -34,6 +34,7 @@
         "typescript": "^5.5.4"
     },
     "dependencies": {
+        "@hapi/accept": "^6.0.3",
         "n3": "^1.17.4"
     }
 }

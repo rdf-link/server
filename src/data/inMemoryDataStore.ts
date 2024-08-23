@@ -1,15 +1,38 @@
 import { IncomingMessage } from "node:http";
 import { Readable, Transform, Writable } from "node:stream";
 
-import { DataFactory, StreamParser, StreamWriter } from "n3";
+import { DataFactory, Store, StreamParser, StreamWriter } from "n3";
 
-export class DataSource {
-    #data;
+export class InMemoryDataStore {
     #domain;
+    #store;
 
-    constructor(data: Readable, domain: URL) {
-        this.#data = data;
+    constructor(data: Readable, format: string, domain: URL) {
         this.#domain = domain
+        this.#store = new Store();
+        data
+            .pipe(new StreamParser({ format }))
+            .on('data', (quad) => {
+                this.#store.add(quad);
+            });
+    }
+
+    #data(): Readable {
+        // Create a readable stream of quads from the store
+        const quads = this.#store.getQuads(null, null, null, null);
+        let index = 0;
+
+        return new Readable({
+            objectMode: true,
+            read() {
+                if (index < quads.length) {
+                    this.push(quads[index]);
+                    index++;
+                } else {
+                    this.push(null);
+                }
+            }
+        });
     }
 
     #describe(request: IncomingMessage): Transform {
@@ -33,21 +56,13 @@ export class DataSource {
         });
     }
 
-    #parse(): Transform {
-        return new StreamParser({ format: 'TURTLE' });
-    }
-
     #write(format: string): Transform {
         return new StreamWriter({format, prefixes: { '': this.#domain.href }});
     }
 
     async query(request: IncomingMessage): Promise<Writable> {
-        // TODO make it so that the query is configurable
-        // Readable RDF turtle stream -> parse as quads -> filter quads -> write response 
-        // parse request to see acceptable representation default to turtle
         const accept = 'TURTLE'
-        return (await this.#data)
-            .pipe(this.#parse())
+        return this.#data()
             .pipe(this.#describe(request))
             .pipe(this.#write(accept));
     }
