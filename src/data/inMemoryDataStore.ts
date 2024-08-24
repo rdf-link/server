@@ -35,8 +35,8 @@ export class InMemoryDataStore {
         });
     }
 
-    #describe(request: IncomingMessage): Transform {
-        const term = DataFactory.namedNode(new URL(`${request.url}`, this.#domain.href).href);
+    #describe(resource: URL): Transform {
+        const term = DataFactory.namedNode(resource.href);
     
         return new Transform({
             // Make sure chunks are considered as object instead of buffers
@@ -60,10 +60,24 @@ export class InMemoryDataStore {
         return new StreamWriter({format, prefixes: { '': this.#domain.href }});
     }
 
-    async query(request: IncomingMessage): Promise<Writable> {
+    async query(resource: URL): Promise<Writable> {
         const accept = 'TURTLE'
         return this.#data()
-            .pipe(this.#describe(request))
+            .pipe(this.#describe(resource))
             .pipe(this.#write(accept));
+    }
+
+    resourceExists(iri: URL): boolean {
+        const term = DataFactory.namedNode(iri.href);
+
+        if (this.#store.getQuads(term, null, null, null).length > 0) {
+            return true;
+        }
+
+        if (this.#store.getQuads(null, null, null, term).length > 0) {
+            return true;
+        }
+
+        return false;
     }
 }
