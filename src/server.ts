@@ -18,31 +18,25 @@ const server = createServer(async (request, response) => {
     // 2. Parse URL
     const url = new URL(`${request.url}`, config.domain);
 
-    // 3. If no query parameters
-    if (url.searchParams.size === 0) {
-        // 3.1. If resource exists 303
-        if (datastore.resourceExists(url)) {
-            response.writeHead(303, { 'Location': `/?iri=${url.href}` });
-            return response.end();
-        }
-        // 3.2. Otherwise 404
-        response.writeHead(404, { 'Content-Type': 'text/plain' });
-        return response.end(`Resource does not exist: ${url.href}`);
-    }
-
-    // 4. If no query parameters and resource exists 303
+    // 3. If no query and resource does no exist 404
     if (url.searchParams.size === 0 && !datastore.resourceExists(url)) {
         response.writeHead(404, { 'Content-Type': 'text/plain' });
         return response.end(`Resource does not exist: ${url.href}`);
     }
 
-    // 3. If parameters anywhere but root 400
+    // 4. If no query and resource exists 303
+    if (url.searchParams.size === 0) {
+        response.writeHead(303, { 'Location': `/?iri=${url.href}` });
+        return response.end();
+    }
+
+    // 5. If parameters anywhere but root 400
     if (url.pathname !== "/" && url.searchParams.size > 0) {
         response.writeHead(400, { 'Content-Type': 'text/plain' });
         return response.end('URL query parameters only available on root');
     }
 
-    // 4. If unknown query parameters 400
+    // 5. If unknown query parameters 400
     const knownQueryParameters = [ "iri" ];
     const queryParameters = Array.from(url.searchParams.keys());
     if (queryParameters.length > 0) {
