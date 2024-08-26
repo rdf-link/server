@@ -67,7 +67,7 @@ export class InMemoryDataStore {
             .pipe(this.#write(accept));
     }
 
-    resourceExists(iri: URL): boolean {
+    iriNodeExists(iri: URL): boolean {
         const term = DataFactory.namedNode(iri.href);
 
         if (this.#store.getQuads(term, null, null, null).length > 0) {

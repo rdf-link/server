@@ -4,6 +4,8 @@ import { config } from './config.js';
 import { InMemoryDataStore } from './data/inMemoryDataStore.js';
 import { Readable } from 'node:stream';
 import { requestMethodIsSupported } from './request/requestMethodIsSupported.js';
+import { requestTargetLocationFound } from './request/requestTargetLocationFound.js';
+import { requestTargetsWebDocument } from './request/requestTargetsWebDocument.js';
 
 
 // Instantiate in memory RDF datastore
@@ -18,16 +20,16 @@ const server = createServer(async (request, response) => {
     // 2. Parse URL
     const url = new URL(`${request.url}`, config.domain);
 
-    // 3. If no query and resource does no exist 404
-    if (url.searchParams.size === 0 && !datastore.resourceExists(url)) {
+    // 3. If request does not target a Web document
+    //    - either Location for content negotiated representation is found (303)
+    //    - or not (404)
+    if (!requestTargetsWebDocument(url)) {
+        if (requestTargetLocationFound(url, datastore)) {
+            response.writeHead(303, { 'Location': `/?iri=${url.href}` });
+            return response.end();
+        }
         response.writeHead(404, { 'Content-Type': 'text/plain' });
         return response.end(`Resource does not exist: ${url.href}`);
-    }
-
-    // 4. If no query and resource exists 303
-    if (url.searchParams.size === 0) {
-        response.writeHead(303, { 'Location': `/?iri=${url.href}` });
-        return response.end();
     }
 
     // 5. If parameters anywhere but root 400
