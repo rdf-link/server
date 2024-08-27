@@ -38,7 +38,6 @@ const server = createServer(async (request, response) => {
         return response.end();
     }
 
-
     // TODO
     // Acceptable representation for resource or 406
     //    - Accept: media types

@@ -42,7 +42,6 @@ export class InMemoryDataStore {
         const term = DataFactory.namedNode(resource);
         const that = this;
     
-        // TODO handle blank nodes
         return new Transform({
             // Make sure chunks are considered as object instead of buffers
             objectMode: true,
