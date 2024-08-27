@@ -35,9 +35,10 @@ export class InMemoryDataStore {
         });
     }
 
-    #describe(resource: URL): Transform {
-        const term = DataFactory.namedNode(resource.href);
+    #describe(resource: string): Transform {
+        const term = DataFactory.namedNode(resource);
     
+        // TODO handle blank nodes
         return new Transform({
             // Make sure chunks are considered as object instead of buffers
             objectMode: true,
@@ -60,7 +61,7 @@ export class InMemoryDataStore {
         return new StreamWriter({format, prefixes: { '': this.#domain.href }});
     }
 
-    async query(resource: URL): Promise<Writable> {
+    async query(resource: string): Promise<Writable> {
         const accept = 'TURTLE'
         return this.#data()
             .pipe(this.#describe(resource))

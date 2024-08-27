@@ -1,0 +1,22 @@
+import type { ServerResponse, IncomingMessage } from "http";
+import type { InMemoryDataStore } from "../data/inMemoryDataStore";
+
+import { HTTP } from '../constants.js';
+
+export function requestDoesNotTargetWebDocument(url: URL, datastore: InMemoryDataStore, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): boolean {
+    // All web documents are targeted by requests with a query component.
+    if (url.searchParams.size > 0) {
+        return false;
+    }
+    // If request does not target a web document:
+    //    - either Location for content negotiated representation is found (303),
+    //    - or not (404).
+    if (datastore.iriNodeExists(url)) {
+        response.writeHead(HTTP.STATUS.REDIRECTION.SEE_OTHER, { 'Location': `/?iri=${encodeURIComponent(url.href)}` });
+        return true;
+    }
+
+    response.writeHead(HTTP.STATUS.CLIENT_ERROR.NOT_FOUND, { 'Content-Type': 'text/plain' });
+    response.write(`Resource does not exist: ${url.href}`)
+    return true;
+}
