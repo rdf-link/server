@@ -11,7 +11,7 @@ export function requestQueryIsUnexpected(url: URL, response: ServerResponse<Inco
     }
 
     // If unknown query parameters 400
-    const knownQueryParameters = [ "iri" ];
+    const knownQueryParameters = [ "iri", "literal" ];
     const queryParameters = Array.from(url.searchParams.keys());
     if (queryParameters.length > 0) {
         const unknownQueryParameters = queryParameters.filter((param) => !knownQueryParameters.includes(param));

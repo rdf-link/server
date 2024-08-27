@@ -1,6 +1,6 @@
-import type { TransformCallback, Writable } from "node:stream";
+import type { Writable } from "node:stream";
 
-import type { BlankNode, Quad } from "@rdfjs/types";
+import type { Quad } from "@rdfjs/types";
 
 import { Readable, Transform } from "node:stream";
 
@@ -82,15 +82,41 @@ export class InMemoryDataStore {
         }
     }
 
+    #searchLiteral(literal: string): Transform {
+        const term = DataFactory.literal(literal);
+        const that = this;
+    
+        return new Transform({
+            // Make sure chunks are considered as object instead of buffers
+            objectMode: true,
+    
+            transform(quad, encoding, callback) {
+                if (quad.object.equals(term)) {
+                    that.#describeSubjectBlankNode(quad, this);
+                    this.push(quad);
+                    callback();
+                }
+                else {
+                    callback(null, undefined);
+                }
+            },
+        });
+    }
+
     #write(format: string): Transform {
         return new StreamWriter({format, prefixes: { '': this.#domain.href }});
     }
 
-    async query(resource: string): Promise<Writable> {
-        const accept = 'TURTLE'
+    async iriQuery(resource: string): Promise<Writable> {
         return this.#data()
             .pipe(this.#describe(resource))
-            .pipe(this.#write(accept));
+            .pipe(this.#write('TURTLE'));
+    }
+
+    async literalQuery(resource: string): Promise<Writable> {
+        return this.#data()
+            .pipe(this.#searchLiteral(resource))
+            .pipe(this.#write('TURTLE'));
     }
 
     iriNodeExists(iri: URL): boolean {

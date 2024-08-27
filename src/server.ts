@@ -5,6 +5,7 @@ import { config } from './config.js';
 
 import { InMemoryDataStore } from './data/inMemoryDataStore.js';
 import { requestIsIriQuery } from './request/requestIsIriQuery.js';
+import { requestIsLiteralQuery } from './request/requestIsLiteralQuery.js';
 import { requestDoesNotTargetWebDocument } from './request/requestDoesNotTargetWebDocument.js';
 import { requestIsNotHandledByServer } from './request/requestIsNotHandledByServer.js';
 import { requestMethodIsNotSupported } from './request/requestMethodIsNotSupported.js';
@@ -35,6 +36,11 @@ const server = createServer(async (request, response) => {
     
     // 5. Handle IRI query
     if (await requestIsIriQuery(url, datastore, response)) {
+        return response.end();
+    }
+    
+    // 6. Handle Literal query
+    if (await requestIsLiteralQuery(url, datastore, response)) {
         return response.end();
     }
 
