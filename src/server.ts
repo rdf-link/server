@@ -8,6 +8,7 @@ import { requestIsIriQuery } from './request/requestIsIriQuery.js';
 import { requestIsLiteralQuery } from './request/requestIsLiteralQuery.js';
 import { requestDoesNotTargetWebDocument } from './request/requestDoesNotTargetWebDocument.js';
 import { requestIsNotHandledByServer } from './request/requestIsNotHandledByServer.js';
+import { requestIsSearchQuery } from './request/requestIsSearchQuery.js';
 import { requestMethodIsNotSupported } from './request/requestMethodIsNotSupported.js';
 import { requestQueryIsUnexpected } from './request/requestQueryIsUnexpected.js';
 
@@ -41,6 +42,11 @@ const server = createServer(async (request, response) => {
     
     // 6. Handle Literal query
     if (await requestIsLiteralQuery(url, datastore, response)) {
+        return response.end();
+    }
+    
+    // 7. Handle search query
+    if (await requestIsSearchQuery(url, datastore, response)) {
         return response.end();
     }
 

@@ -103,8 +103,29 @@ export class InMemoryDataStore {
         });
     }
 
+    #searchString(literal: string): Transform {
+        const search = new RegExp(literal, 'g');
+        const that = this;
+    
+        return new Transform({
+            // Make sure chunks are considered as object instead of buffers
+            objectMode: true,
+    
+            transform(quad, encoding, callback) {
+                if (quad.object.termType === "Literal" && search.test(quad.object.value)) {
+                    that.#describeSubjectBlankNode(quad, this);
+                    this.push(quad);
+                    callback();
+                }
+                else {
+                    callback(null, undefined);
+                }
+            },
+        });
+    }
+
     #write(format: string): Transform {
-        return new StreamWriter({format, prefixes: { '': this.#domain.href }});
+        return new StreamWriter({ format, prefixes: { '': this.#domain.href } });
     }
 
     async iriQuery(resource: string): Promise<Writable> {
@@ -114,8 +135,16 @@ export class InMemoryDataStore {
     }
 
     async literalQuery(resource: string): Promise<Writable> {
+        // TODO accept language
         return this.#data()
             .pipe(this.#searchLiteral(resource))
+            .pipe(this.#write('TURTLE'));
+    }
+
+    async searchQuery(resource: string): Promise<Writable> {
+        // TODO accept language
+        return this.#data()
+            .pipe(this.#searchString(resource))
             .pipe(this.#write('TURTLE'));
     }
 
