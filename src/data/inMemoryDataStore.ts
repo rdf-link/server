@@ -1,5 +1,8 @@
-import { IncomingMessage } from "node:http";
-import { Readable, Transform, Writable } from "node:stream";
+import type { TransformCallback, Writable } from "node:stream";
+
+import type { BlankNode, Quad } from "@rdfjs/types";
+
+import { Readable, Transform } from "node:stream";
 
 import { DataFactory, Store, StreamParser, StreamWriter } from "n3";
 
@@ -37,6 +40,7 @@ export class InMemoryDataStore {
 
     #describe(resource: string): Transform {
         const term = DataFactory.namedNode(resource);
+        const that = this;
     
         // TODO handle blank nodes
         return new Transform({
@@ -45,16 +49,38 @@ export class InMemoryDataStore {
     
             transform(quad, encoding, callback) {
                 if (quad.subject.equals(term)) {
-                    callback(null, quad);
+                    that.#describeObjectBlankNode(quad, this);
+                    this.push(quad);
+                    callback();
                 }
                 else if (quad.object.equals(term)) {
-                    callback(null, quad);
+                    that.#describeSubjectBlankNode(quad, this);
+                    this.push(quad);
+                    callback();
                 }
                 else {
                     callback(null, undefined);
                 }
             },
         });
+    }
+
+    #describeObjectBlankNode(quad: Quad, transform: Transform) {
+        if (quad.object.termType === "BlankNode") {
+            for (const blankNodeSubjectQuad of this.#store.getQuads(quad.object, null, null, null)) {
+                transform.push(blankNodeSubjectQuad);
+                this.#describeObjectBlankNode(blankNodeSubjectQuad, transform);
+            }
+        }
+    }
+
+    #describeSubjectBlankNode(quad: Quad, transform: Transform) {
+        if (quad.subject.termType === "BlankNode") {
+            for (const blankNodeObjectQuad of this.#store.getQuads(null, null, quad.subject, null)) {
+                transform.push(blankNodeObjectQuad);
+                this.#describeSubjectBlankNode(blankNodeObjectQuad, transform);
+            }
+        }
     }
 
     #write(format: string): Transform {
@@ -75,7 +101,7 @@ export class InMemoryDataStore {
             return true;
         }
 
-        if (this.#store.getQuads(null, null, null, term).length > 0) {
+        if (this.#store.getQuads(null, null, term, null).length > 0) {
             return true;
         }
 
