@@ -34,17 +34,17 @@ const server = createServer(async (request, response) => {
     if (requestQueryIsUnexpected(url, response)) {
         return response.end()
     }
-    
+
     // 5. Handle IRI query
     if (await requestIsIriQuery(url, datastore, response)) {
         return response.end();
     }
-    
+
     // 6. Handle Literal query
     if (await requestIsLiteralQuery(url, datastore, response)) {
         return response.end();
     }
-    
+
     // 7. Handle search query
     if (await requestIsSearchQuery(url, datastore, response)) {
         return response.end();
@@ -57,19 +57,31 @@ const server = createServer(async (request, response) => {
     //    - Language
     // -> ?iri=<https://example.org/bdsfo>
     // -> ?literal=<example>
-    // -> ?query=<parameterized query>
     // -> ?search=<example search all literals>
+    // -> ?query=<parameterized query>
     // -> ?sparql=<query>
-    
+
     // Default to 500 if request is not handled by server
     requestIsNotHandledByServer(url, response);
     return response.end();
 });
 
-server.listen(config.port, () => {
-    console.log(`Node environment: ${config.environment}`);
-    console.log(`Server running: http://${process.env.HOST ?? 'localhost'}:${config.port}/`);
-});
+export async function startServer(port?: number) {
+    const PORT = port ?? config.port;
+    return new Promise((resolve) => {
+        server.listen(PORT, () => {
+            console.log(`Node environment: ${config.environment}`);
+            console.log(`Server running: http://${process.env.HOST ?? 'localhost'}:${PORT}/`);
+            resolve(null);
+        });
+    });
+}
 
-
-
+export async function stopServer() {
+    return new Promise((resolve) => {
+        server.close(() => {
+            console.log('Server stopped');
+            resolve(null);
+        });
+    });
+}
