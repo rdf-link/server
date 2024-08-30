@@ -48,6 +48,7 @@ export class InMemoryDataStore implements DataStore {
             // Make sure chunks are considered as object instead of buffers
             objectMode: true,
     
+            // TODO handle blank node statements duplication
             transform(quad, encoding, callback) {
                 if (quad.subject.equals(term)) {
                     that.#describeObjectBlankNode(quad, this);

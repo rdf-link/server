@@ -1,9 +1,10 @@
 import type { ServerResponse, IncomingMessage } from "node:http";
-import type { InMemoryDataStore } from "../data/inMemoryDataStore";
+
+import type { DataStore } from "../data/DataStore.js";
 
 import { HTTP } from '../constants.js';
 
-export async function requestDoesNotTargetWebDocument(url: URL, datastore: InMemoryDataStore, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): Promise<boolean> {
+export async function requestDoesNotTargetWebDocument(url: URL, datastore: DataStore, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): Promise<boolean> {
     // All web documents are targeted by requests with a query component.
     if (url.searchParams.size > 0) {
         return false;

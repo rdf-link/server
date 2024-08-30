@@ -1,11 +1,11 @@
 import type { ServerResponse, IncomingMessage } from "node:http";
 
-import type { InMemoryDataStore } from "../data/inMemoryDataStore";
+import type { DataStore } from "../data/DataStore.js";
 
 import { HTTP } from "../constants.js";
 import { writeResponse } from "../utils/writeResponse.js";
 
-export async function requestIsIriQuery(url: URL, datastore: InMemoryDataStore, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): Promise<boolean> {
+export async function requestIsIriQuery(url: URL, datastore: DataStore, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): Promise<boolean> {
     if (!url.searchParams.has('iri')) {
         return false;
     }

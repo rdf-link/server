@@ -22,8 +22,8 @@
     },
     "scripts": {
         "build": "tsc",
-        "start": "NODE_ENV=production node --env-file=.env ./bin/start.js",
-        "start:dev": "NODE_ENV=development node --watch --env-file=.env ./bin/start.js",
+        "start": "NODE_ENV=production node --env-file=.env ./dist/start.js",
+        "start:dev": "NODE_ENV=development node --watch --env-file=.env ./dist/start.js",
         "test": "node --test",
         "terminate": "pkill -f node",
         "bench": "ab -k -c 25 -n 1000 'http://127.0.0.1:3000/'"

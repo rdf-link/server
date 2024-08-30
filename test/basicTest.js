@@ -1,13 +1,19 @@
 import assert from "node:assert";
 import { after, before, describe, it } from "node:test";
 
-import { startServer, stopServer } from "../dist/server.js"
+import { Readable } from 'node:stream';
+
+import { InMemoryDataStore } from '../dist/data/inMemoryDataStore.js';
+import { config } from '../dist/config.js';
+import { Server } from "../dist/server/server.js"
 
 const PORT = 7070;
+const datastore = new InMemoryDataStore(Readable.from(config.data), config.dataFormat, config.domain);
+const server = new Server(datastore);
 
 describe('Simple Get ', async () => {
-    before(async () => { await startServer(PORT); });
-    after(async () => {  await stopServer(); });
+    before(async () => { await server.start({ port: PORT }); });
+    after(async () => {  await server.stop(); });
 
     await it('should work', async () => {
         const response = await fetch(new URL(`http://localhost:${PORT}/`));

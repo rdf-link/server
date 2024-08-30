@@ -9,5 +9,5 @@
     "sourceMap": true,
     "declaration": true
   },
-  "include": ["src/server.ts"]
+  "include": ["src/start.ts"]
 }
