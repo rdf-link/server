@@ -26,7 +26,7 @@ const server = createServer(async (request, response) => {
     const url = new URL(`${request.url}`, config.domain);
 
     // 3. Handle requests that do not target web documents
-    if (requestDoesNotTargetWebDocument(url, datastore, response)) {
+    if (await requestDoesNotTargetWebDocument(url, datastore, response)) {
         return response.end();
     }
 
@@ -66,12 +66,11 @@ const server = createServer(async (request, response) => {
     return response.end();
 });
 
-export async function startServer(port?: number) {
-    const PORT = port ?? config.port;
+export async function startServer({ port } = config) {
     return new Promise((resolve) => {
-        server.listen(PORT, () => {
+        server.listen(port, () => {
             console.log(`Node environment: ${config.environment}`);
-            console.log(`Server running: http://${process.env.HOST ?? 'localhost'}:${PORT}/`);
+            console.log(`Server running: http://${process.env.HOST ?? 'localhost'}:${port}/`);
             resolve(null);
         });
     });

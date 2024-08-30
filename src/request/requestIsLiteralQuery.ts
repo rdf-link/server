@@ -1,4 +1,4 @@
-import type { ServerResponse, IncomingMessage } from "http";
+import type { ServerResponse, IncomingMessage } from "node:http";
 
 import type { InMemoryDataStore } from "../data/inMemoryDataStore.js";
 
@@ -12,6 +12,6 @@ export async function requestIsLiteralQuery(url: URL, datastore: InMemoryDataSto
 
     response.writeHead(HTTP.STATUS.SUCCESSFUL.OK, { 'Content-Type': 'text/turtle' });
 
-    await writeResponse((await datastore.literalQuery(url.searchParams.get('literal') || '')), response);
+    await writeResponse((await datastore.literal(url.searchParams.get('literal') || '')), response);
     return true;
 }

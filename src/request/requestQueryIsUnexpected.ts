@@ -1,4 +1,4 @@
-import type { ServerResponse, IncomingMessage } from "http";
+import type { ServerResponse, IncomingMessage } from "node:http";
 
 import { HTTP } from '../constants.js';
 

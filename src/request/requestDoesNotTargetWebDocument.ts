@@ -1,9 +1,9 @@
-import type { ServerResponse, IncomingMessage } from "http";
+import type { ServerResponse, IncomingMessage } from "node:http";
 import type { InMemoryDataStore } from "../data/inMemoryDataStore";
 
 import { HTTP } from '../constants.js';
 
-export function requestDoesNotTargetWebDocument(url: URL, datastore: InMemoryDataStore, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): boolean {
+export async function requestDoesNotTargetWebDocument(url: URL, datastore: InMemoryDataStore, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): Promise<boolean> {
     // All web documents are targeted by requests with a query component.
     if (url.searchParams.size > 0) {
         return false;
@@ -11,7 +11,7 @@ export function requestDoesNotTargetWebDocument(url: URL, datastore: InMemoryDat
     // If request does not target a web document:
     //    - either Location for content negotiated representation is found (303),
     //    - or not (404).
-    if (datastore.iriNodeExists(url)) {
+    if (await datastore.iriIsSubjectOrObject(url.href)) {
         response.writeHead(HTTP.STATUS.REDIRECTION.SEE_OTHER, { 'Location': `/?iri=${encodeURIComponent(url.href)}` });
         return true;
     }

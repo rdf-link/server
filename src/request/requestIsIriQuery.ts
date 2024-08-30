@@ -1,4 +1,4 @@
-import type { ServerResponse, IncomingMessage } from "http";
+import type { ServerResponse, IncomingMessage } from "node:http";
 
 import type { InMemoryDataStore } from "../data/inMemoryDataStore";
 
@@ -12,6 +12,6 @@ export async function requestIsIriQuery(url: URL, datastore: InMemoryDataStore, 
 
     response.writeHead(HTTP.STATUS.SUCCESSFUL.OK, { 'Content-Type': 'text/turtle' });
 
-    await writeResponse((await datastore.iriQuery(decodeURIComponent(url.searchParams.get('iri') || ''))), response);
+    await writeResponse((await datastore.iri(decodeURIComponent(url.searchParams.get('iri') || ''))), response);
     return true;
 }

@@ -6,7 +6,9 @@ import { Readable, Transform } from "node:stream";
 
 import { DataFactory, Store, StreamParser, StreamWriter } from "n3";
 
-export class InMemoryDataStore {
+import { DataStore } from "./DataStore.js";
+
+export class InMemoryDataStore implements DataStore {
     #domain;
     #store;
 
@@ -128,28 +130,28 @@ export class InMemoryDataStore {
         return new StreamWriter({ format, prefixes: { '': this.#domain.href } });
     }
 
-    async iriQuery(resource: string): Promise<Writable> {
+    async iri(resource: string): Promise<Writable> {
         return this.#data()
             .pipe(this.#describe(resource))
             .pipe(this.#write('TURTLE'));
     }
 
-    async literalQuery(resource: string): Promise<Writable> {
+    async literal(resource: string): Promise<Writable> {
         // TODO accept language
         return this.#data()
             .pipe(this.#searchLiteral(resource))
             .pipe(this.#write('TURTLE'));
     }
 
-    async searchQuery(resource: string): Promise<Writable> {
+    async search(resource: string): Promise<Writable> {
         // TODO accept language
         return this.#data()
             .pipe(this.#searchString(resource))
             .pipe(this.#write('TURTLE'));
     }
 
-    iriNodeExists(iri: URL): boolean {
-        const term = DataFactory.namedNode(iri.href);
+    async iriIsSubjectOrObject(resource: string): Promise<boolean> {
+        const term = DataFactory.namedNode(resource);
 
         if (this.#store.getQuads(term, null, null, null).length > 0) {
             return true;

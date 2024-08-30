@@ -1,4 +1,4 @@
-import type { ServerResponse, IncomingMessage } from "http";
+import type { ServerResponse, IncomingMessage } from "node:http";
 
 import type { InMemoryDataStore } from "../data/inMemoryDataStore.js";
 
@@ -12,6 +12,6 @@ export async function requestIsSearchQuery(url: URL, datastore: InMemoryDataStor
 
     response.writeHead(HTTP.STATUS.SUCCESSFUL.OK, { 'Content-Type': 'text/turtle' });
 
-    await writeResponse((await datastore.searchQuery(url.searchParams.get('search') || '')), response);
+    await writeResponse((await datastore.search(url.searchParams.get('search') || '')), response);
     return true;
 }
