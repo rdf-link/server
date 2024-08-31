@@ -1,6 +1,6 @@
 import type { ServerResponse, IncomingMessage } from "node:http";
 
-import { HTTP } from '../constants.js';
+import { HTTP } from '../utils/constants.js';
 
 export function requestQueryIsUnexpected(url: URL, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): boolean {
     // If query parameters anywhere but root 400

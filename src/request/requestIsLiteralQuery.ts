@@ -1,8 +1,8 @@
 import type { ServerResponse, IncomingMessage } from "node:http";
 
-import type { DataStore } from "../data/DataStore.js";
+import type { DataStore } from "../data/dataStore.js";
 
-import { HTTP } from "../constants.js";
+import { HTTP } from "../utils/constants.js";
 import { writeResponse } from "../utils/writeResponse.js";
 
 export async function requestIsLiteralQuery(url: URL, datastore: DataStore, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): Promise<boolean> {

@@ -1,10 +1,8 @@
 import type { Server as NodeServer } from "node:http";
 
-import type { DataStore } from "../data/DataStore.js";
+import type { DataStore } from "../data/dataStore.js";
 
 import { createServer } from 'node:http';
-
-import { config } from '../config.js';
 
 import { requestIsIriQuery } from '../request/requestIsIriQuery.js';
 import { requestIsLiteralQuery } from '../request/requestIsLiteralQuery.js';
@@ -16,10 +14,13 @@ import { requestQueryIsUnexpected } from '../request/requestQueryIsUnexpected.js
 
 export class Server {
     #datastore: DataStore;
+    #domain: URL;
     #server: NodeServer
 
-    constructor(datastore: DataStore) {
+    constructor(datastore: DataStore, domain: URL) {
         this.#datastore = datastore;
+
+        this.#domain = domain;
 
         this.#server = createServer(async (request, response) => {
             // 1. Handle unsupported HTTP methods
@@ -28,7 +29,7 @@ export class Server {
             }
         
             // 2. Parse URL
-            const url = new URL(`${request.url}`, config.domain);
+            const url = new URL(`${request.url}`, this.#domain);
         
             // 3. Handle requests that do not target web documents
             if (await requestDoesNotTargetWebDocument(url, this.#datastore, response)) {
@@ -72,10 +73,10 @@ export class Server {
         });
     }
 
-    async start({ port } = config) {
+    async start(port: number) {
         return new Promise((resolve) => {
             this.#server.listen(port, () => {
-                console.log(`Node environment: ${config.environment}`);
+                console.log(`Node environment: ${process.env.NODE_ENV}`);
                 console.log(`Server running: http://${process.env.HOST ?? 'localhost'}:${port}/`);
                 resolve(null);
             });

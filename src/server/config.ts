@@ -4,5 +4,4 @@ export const config = {
     dataFormat: process.env.DATA_FORMAT ?? 'TURTLE',
     domain: new URL(process.env.DOMAIN ?? 'https://example.org'),
     environment: process.env.NODE_ENV ?? 'production',
-    port: process.env.PORT ?? 3000,
 }

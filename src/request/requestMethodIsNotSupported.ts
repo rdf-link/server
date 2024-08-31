@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
-import { HTTP } from '../constants.js';
+import { HTTP } from '../utils/constants.js';
 
 export function requestMethodIsNotSupported(request: IncomingMessage, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): boolean {
     if (request.method === HTTP.REQUEST_METHOD.GET) {

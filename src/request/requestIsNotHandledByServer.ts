@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
-import { HTTP } from '../constants.js';
+import { HTTP } from '../utils/constants.js';
 
 export function requestIsNotHandledByServer(url: URL, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }) {
     response.writeHead(HTTP.STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR, { 'Content-Type': 'text/plain' });

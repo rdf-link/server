@@ -9,10 +9,10 @@ import { Server } from "../dist/server/server.js"
 
 const PORT = 7070;
 const datastore = new InMemoryDataStore(Readable.from(config.data), config.dataFormat, config.domain);
-const server = new Server(datastore);
+const server = new Server(datastore, config.domain);
 
 describe('Simple Get ', async () => {
-    before(async () => { await server.start({ port: PORT }); });
+    before(async () => { await server.start(PORT); });
     after(async () => {  await server.stop(); });
 
     await it('should work', async () => {

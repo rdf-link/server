@@ -6,7 +6,7 @@ import { Readable, Transform } from "node:stream";
 
 import { DataFactory, Store, StreamParser, StreamWriter } from "n3";
 
-import { DataStore } from "./DataStore.js";
+import { DataStore } from "./dataStore.js";
 
 export class InMemoryDataStore implements DataStore {
     #domain;
