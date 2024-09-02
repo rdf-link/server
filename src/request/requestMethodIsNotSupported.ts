@@ -2,11 +2,11 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import { HTTP } from '../utils/constants.js';
 
-export function requestMethodIsNotSupported(request: IncomingMessage, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): boolean {
-    if (request.method === HTTP.REQUEST_METHOD.GET) {
+export function requestMethodIsNotSupported(method: string | undefined, response: ServerResponse<IncomingMessage> & { req: IncomingMessage; }): boolean {
+    if (method === HTTP.REQUEST_METHOD.GET) {
         return false;
     }
-    if (request.method === HTTP.REQUEST_METHOD.HEAD) {
+    if (method === HTTP.REQUEST_METHOD.HEAD) {
         return false;
     }
 

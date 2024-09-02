@@ -85,7 +85,7 @@ export class InMemoryDataStore implements DataStore {
         }
     }
 
-    #searchLiteral(literal: string): Transform {
+    #literal(literal: string): Transform {
         const term = DataFactory.literal(literal);
         const that = this;
     
@@ -106,8 +106,8 @@ export class InMemoryDataStore implements DataStore {
         });
     }
 
-    #searchString(literal: string): Transform {
-        const search = new RegExp(literal, 'g');
+    #search(pattern: string): Transform {
+        const search = new RegExp(pattern, 'g');
         const that = this;
     
         return new Transform({
@@ -140,14 +140,14 @@ export class InMemoryDataStore implements DataStore {
     async literal(resource: string): Promise<Writable> {
         // TODO accept language
         return this.#data()
-            .pipe(this.#searchLiteral(resource))
+            .pipe(this.#literal(resource))
             .pipe(this.#write('TURTLE'));
     }
 
-    async search(resource: string): Promise<Writable> {
+    async search(pattern: string): Promise<Writable> {
         // TODO accept language
         return this.#data()
-            .pipe(this.#searchString(resource))
+            .pipe(this.#search(pattern))
             .pipe(this.#write('TURTLE'));
     }
 

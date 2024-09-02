@@ -24,7 +24,7 @@ export class Server {
 
         this.#server = createServer(async (request, response) => {
             // 1. Handle unsupported HTTP methods
-            if (requestMethodIsNotSupported(request, response)) {
+            if (requestMethodIsNotSupported(request.method, response)) {
                 return response.end();
             }
         
