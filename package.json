@@ -3,16 +3,16 @@
     "version": "0.0.1",
     "description": "",
     "type": "module",
-    "main": "./dist/server.js",
-    "types": "./dist/server.d.ts",
+    "main": "./dist/start.js",
+    "types": "./dist/start.d.ts",
     "exports": {
-        ".": "./dist/server.js"
+        ".": "./dist/start.js"
     },
     "files": [
         "dist"
     ],
-    "license": "ISC",
     "author": "",
+    "license": "ISC",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/rdf-link/server.git"
