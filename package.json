@@ -22,7 +22,7 @@
     },
     "scripts": {
         "build": "tsc",
-        "start": "NODE_ENV=production node --env-file=.env ./dist/start.js",
+        "start": "NODE_ENV=production node --env-file=.env .",
         "start:dev": "NODE_ENV=development node --watch --env-file=.env ./dist/start.js",
         "test": "node --test",
         "terminate": "pkill -f node",
@@ -30,12 +30,11 @@
     },
     "devDependencies": {
         "@rdfjs/types": "^1.1.0",
-        "@types/n3": "^1.16.4",
-        "@types/node": "^20.14.12",
+        "@types/n3": "^1.16.5",
+        "@types/node": "^22.5.2",
         "typescript": "^5.5.4"
     },
     "dependencies": {
-        "@hapi/accept": "^6.0.3",
-        "n3": "^1.17.4"
+        "n3": "^1.21.0"
     }
 }
